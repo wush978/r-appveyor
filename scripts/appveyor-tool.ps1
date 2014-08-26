@@ -51,14 +51,14 @@ Function Bootstrap {
   tzutil /g
   tzutil /s "GMT Standard Time"
   tzutil /g
-  Progress "Downloading R.vhd"
-  bash -c 'curl -s -L https://rportable.blob.core.windows.net/r-portable/master/R.vhd.gz | gunzip -c > ../R.vhd'
+  Progress "Downloading R.iso"
+  bash -c 'curl -s -L https://rportable.blob.core.windows.net/r-portable/master/R.iso.gz | gunzip -c > ../R.iso'
 
-  Progress "Getting full path for R.vhd"
-  $ImageFullPath = Get-ChildItem "..\R.vhd" | % { $_.FullName }
+  Progress "Getting full path for R.iso"
+  $ImageFullPath = Get-ChildItem "..\R.iso" | % { $_.FullName }
   $ImageFullPath
 
-  Progress "Mounting R.vhd"
+  Progress "Mounting R.iso"
   Mount-DiskImage -ImagePath $ImageFullPath
   # Enumerating drive letters takes about 10 seconds:
   # http://www.powershellmagazine.com/2013/03/07/pstip-finding-the-drive-letter-of-a-mounted-disk-image/
