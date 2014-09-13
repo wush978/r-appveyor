@@ -47,10 +47,14 @@ Function Bootstrap {
 
   Progress "Bootstrap: Start"
 
+  Progress "Adding GnuWin32 tools to PATH"
+  $env:PATH = "C:\Program Files (x86)\Git\bin;" + $env:PATH
+
   Progress "Setting time zone"
   tzutil /g
   tzutil /s "GMT Standard Time"
   tzutil /g
+
   Progress "Downloading R.iso"
   bash -c 'curl -s -L https://rportable.blob.core.windows.net/r-portable/master/R.iso.gz | gunzip -c > ../R.iso'
 
