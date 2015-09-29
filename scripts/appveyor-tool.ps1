@@ -55,8 +55,8 @@ Function Bootstrap {
   tzutil /s "GMT Standard Time"
   tzutil /g
 
-  Progress "Downloading R.iso"
-  bash -c 'curl -s -L https://rportable.blob.core.windows.net/r-portable/master/R.iso.gz | gunzip -c > ../R.iso'
+  Progress "Downloading R.iso and Rtools.iso"
+  bash -c '(curl -s -L https://rportable.blob.core.windows.net/r-portable/master/Rtools.iso.gz | gunzip -c > ../Rtools.iso) & rtools_pid=$!; curl -s -L https://rportable.blob.core.windows.net/r-portable/master/R.iso.gz | gunzip -c > ../R.iso; wait $rtools_pid'
 
   Progress "Getting full path for R.iso"
   $ImageFullPath = Get-ChildItem "..\R.iso" | % { $_.FullName }
@@ -71,6 +71,19 @@ Function Bootstrap {
   }
   echo "R is now available on drive $RDrive"
 
+  Progress "Getting full path for Rtools.iso"
+  $ImageFullPath = Get-ChildItem "..\Rtools.iso" | % { $_.FullName }
+  $ImageSize = (Get-Item $ImageFullPath).length
+  echo "$ImageFullPath [$ImageSize bytes]"
+
+  Progress "Mounting Rtools.iso"
+  $RtoolsDrive = [string](Mount-DiskImage -ImagePath $ImageFullPath -Passthru | Get-DiskImage | Get-Disk | Get-Partition | Get-Volume).DriveLetter + ":"
+  # Assert that R was mounted properly
+  if ( -not (Test-Path "${RtoolsDrive}\Rtools\bin" -PathType Container) ) {
+    Throw "Failed to mount Rtools. Could not find directory: ${RtoolsDrive}\Rtools\bin"
+  }
+  echo "Rtools is now available on drive $RtoolsDrive"
+
   Progress "Downloading and installing travis-tool.sh"
   Invoke-WebRequest http://raw.github.com/krlmlr/r-travis/master/scripts/travis-tool.sh -OutFile "..\travis-tool.sh"
   echo '@bash.exe ../travis-tool.sh %*' | Out-File -Encoding ASCII .\travis-tool.sh.cmd
@@ -79,7 +92,7 @@ Function Bootstrap {
   cat .\.Rbuildignore
 
   Progress "Setting PATH"
-  $env:PATH = $RDrive + '\Rtools\bin;' + $RDrive + '\Rtools\MinGW\bin;' + $RDrive + '\Rtools\gcc-4.6.3\bin;' + $RDrive + '\R\bin\i386;' + $env:PATH
+  $env:PATH = $RtoolsDrive + '\Rtools\bin;' + $RtoolsDrive + '\Rtools\MinGW\bin;' + $RtoolsDrive + '\Rtools\gcc-4.6.3\bin;' + $RDrive + '\R\bin\i386;' + $env:PATH
   $env:PATH.Split(";")
 
   Progress "Setting R_LIBS_USER"
