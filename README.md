@@ -17,20 +17,28 @@ Usage
 8. Enjoy!
 
 
+Build and test commands
+-----------------------
+
+The `travis-tool` used in `appveyor.yml` is a [modified copy](https://github.com/krlmlr/r-travis) of the r-travis project, documentation is available [on its wiki](https://github.com/craigcitro/r-travis/wiki#configuration-options).
+
+
+
 Environment variables
 ---------------------
 
-These can be set in the `appveyor.yml`, overriding the defaults. [This repo](https://github.com/krlmlr/r-appveyor/blob/master/appveyor.yml#L15) tests several configurations at once in a build matrix, see also the [build status](https://ci.appveyor.com/project/krlmlr/r-appveyor/branch/master).
+These can be set in the `appveyor.yml`, overriding the defaults. [This repo](https://github.com/krlmlr/r-appveyor/blob/master/appveyor.yml#L20) tests several configurations at once in a build matrix, see also the [build status](https://ci.appveyor.com/project/krlmlr/r-appveyor/branch/master).
 
 - `R_VERSION`: The version of R to be used for testing. Specify `devel`, `patched`, `stable` (or `release`), `oldrel`, or a version number.
 - `R_ARCH`: The architecture to be used for testing, one of `i386` (default) or `x64`.
 - `RTOOLS_VERSION`: The version of Rtools to be used for testing, defaults to the most recent Rtools. Specify e.g. `33` for Rtools 3.3.
 - `USE_RTOOLS`: Set `USE_RTOOLS: true` if Rtools needs to be installed, e.g. if you use install_github or if there are packages in Remotes: in your DESCRIPTION file. Defaults to `false`.
 - `GCC_PATH`: The path to GCC in the Rtools installation, currently one of `gcc-4.6.3` (default), `mingw_32` or `mingw_64`.
-- `WARNINGS_ARE_ERRORS`: Set to 1 to treat all warnings as errors.
+- `WARNINGS_ARE_ERRORS`: Set to 1 to treat all warnings as errors, otherwise leave empty.
 - `CRAN`: The CRAN mirror to use, defaults to [RStudio's CDN via HTTPS](https://cran.rstudio.com). Change to [HTTP](http://cran.rstudio.com) for R 3.1.3 or earlier.
 - `R_BUILD_ARGS`: Arguments passed to `R CMD build`, defaults to `--no-manual`.
 - `R_CHECK_ARGS`: Arguments passed to `R CMD check`, defaults to `--no-manual --as-cran`.
+- `PKGTYPE`: Passed as `type` to `install.packages()`, `remotes::install_deps()` and `devtools::install_deps()`.
 
 Currently, all builds use the `--no-multiarch` switch for checking, and all vignettes (and the `VignetteBuilder` entry in `DESCRIPTION`) are removed prior to building (due to the absence of pandoc and LaTeX which are likely to be needed).
 

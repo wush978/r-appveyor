@@ -67,14 +67,14 @@ Function InstallR {
   }
   ElseIf (($version -eq "stable") -or ($version -eq "release")) {
     $url_path = ""
-    $version = $(ConvertFrom-JSON $(Invoke-WebRequest http://rversions.r-pkg.org/r-release).Content).version
+    $version = $(ConvertFrom-JSON $(Invoke-WebRequest http://rversions.r-pkg.org/r-release-win).Content).version
     If ($version -eq "3.2.4") {
       $version = "3.2.4revised"
     }
   }
   ElseIf ($version -eq "patched") {
     $url_path = ""
-    $version = $(ConvertFrom-JSON $(Invoke-WebRequest http://rversions.r-pkg.org/r-release).Content).version + "patched"
+    $version = $(ConvertFrom-JSON $(Invoke-WebRequest http://rversions.r-pkg.org/r-release-win).Content).version + "patched"
   }
   ElseIf ($version -eq "oldrel") {
     $version = $(ConvertFrom-JSON $(Invoke-WebRequest http://rversions.r-pkg.org/r-oldrel).Content).version
@@ -89,7 +89,7 @@ Function InstallR {
   $rurl = $CRAN + "/bin/windows/base/" + $url_path + "R-" + $version + "-win.exe"
 
   Progress ("Downloading R from: " + $rurl)
-  Exec { bash -c ("curl --silent -o ../R-win.exe -L " + $rurl) }
+  & "C:\Program Files\Git\mingw64\bin\curl.exe" -s -o ../R-win.exe -L $rurl
 
   Progress "Running R installer"
   Start-Process -FilePath ..\R-win.exe -ArgumentList "/VERYSILENT /DIR=C:\R" -NoNewWindow -Wait
@@ -116,7 +116,7 @@ Function InstallRtools {
   $rtoolsurl = $CRAN + "/bin/windows/Rtools/Rtools$rtoolsver.exe"
 
   Progress ("Downloading Rtools from: " + $rtoolsurl)
-  bash -c ("curl --silent -o ../Rtools-current.exe -L " + $rtoolsurl)
+  & "C:\Program Files\Git\mingw64\bin\curl.exe" -s -o ../Rtools-current.exe -L $rtoolsurl
 
   Progress "Running Rtools installer"
   Start-Process -FilePath ..\Rtools-current.exe -ArgumentList /VERYSILENT -NoNewWindow -Wait
@@ -159,7 +159,7 @@ Function Bootstrap {
   }
 
   Progress "Downloading and installing travis-tool.sh"
-  Invoke-WebRequest http://raw.github.com/krlmlr/r-travis/master/scripts/travis-tool.sh -OutFile "..\travis-tool.sh"
+  Invoke-WebRequest https://raw.github.com/krlmlr/r-appveyor/master/r-travis/scripts/travis-tool.sh -OutFile "..\travis-tool.sh"
   echo '@bash.exe ../travis-tool.sh %*' | Out-File -Encoding ASCII .\travis-tool.sh.cmd
   cat .\travis-tool.sh.cmd
   bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
