@@ -194,7 +194,7 @@ RInstall() {
     fi
 
     echo "Installing R package(s): $@"
-    Rscript -e 'install.packages(commandArgs(TRUE), repos="'"${CRAN}"'", INSTALL_opts="--no-multiarch", type="'"${PKGTYPE}"'")' "$@"
+    Rscript -e 'install.packages(commandArgs(TRUE), repos="'"${CRAN}"'", INSTALL_opts="", type="'"${PKGTYPE}"'")' "$@"
 }
 
 BiocInstall() {
@@ -276,7 +276,7 @@ DumpLogs() {
 
 RunTests() {
     echo "Building with: R CMD build ${R_BUILD_ARGS}"
-    if [[ "${OS:0:5}" == "MINGW" ]]; then
+    if [[ "${OS:0:5}" == "MINGW" || "${OS:0:4}" == "MSYS" ]]; then
         if [[ -d vignettes ]]; then
             rm -rf vignettes
             Rscript -e "d <- read.dcf('DESCRIPTION'); d[, colnames(d) == 'VignetteBuilder'] <- NA; write.dcf(d, 'DESCRIPTION')"
@@ -287,8 +287,8 @@ RunTests() {
     FILE=$(ls -1t *.tar.gz | head -n 1)
 
     # Create binary package (currently Windows only)
-    if [[ "${OS:0:5}" == "MINGW" ]]; then
-        R_CHECK_INSTALL_ARGS="--install-args=--build --no-multiarch"
+    if [[ "${OS:0:5}" == "MINGW" || "${OS:0:4}" == "MSYS" ]]; then
+        R_CHECK_INSTALL_ARGS="--install-args=--build"
     fi
 
     echo "Testing with: R CMD check \"${FILE}\" ${R_CHECK_ARGS} ${R_CHECK_INSTALL_ARGS}"
